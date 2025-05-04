@@ -63,7 +63,7 @@ static void unseal_begin(struct input_output_ctx *ctx)
 	ctx->written = 0;
 }
 
-static bool seal_push(struct input_output_ctx *ctx, const uint8_t *data,
+static void seal_push(struct input_output_ctx *ctx, const uint8_t *data,
 		      size_t len, bool eof)
 {
 	uint8_t tmp[len + crypto_secretstream_xchacha20poly1305_ABYTES];
@@ -83,10 +83,9 @@ static bool seal_push(struct input_output_ctx *ctx, const uint8_t *data,
 		err(1, "Can't write output");
 
 	ctx->written += sizeof(tmp);
-	return false;
 }
 
-static bool unseal_push(struct input_output_ctx *ctx, const uint8_t *data,
+static void unseal_push(struct input_output_ctx *ctx, const uint8_t *data,
 			size_t len, bool eof)
 {
 	uint8_t tmp[len - crypto_secretstream_xchacha20poly1305_ABYTES];
@@ -104,7 +103,8 @@ static bool unseal_push(struct input_output_ctx *ctx, const uint8_t *data,
 		errx(1, "Truncated sealed input stream");
 
 	ctx->written += sizeof(tmp);
-	return tag == crypto_secretstream_xchacha20poly1305_TAG_FINAL;
+	if (tag == crypto_secretstream_xchacha20poly1305_TAG_FINAL && !eof)
+		errx(1, "End of signed data before EOF");
 }
 
 static int sk_from_hex(uint8_t *sk, const char *hex)

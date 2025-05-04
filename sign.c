@@ -31,7 +31,7 @@ static void sign_begin(struct input_output_ctx *ctx)
 	crypto_sign_init(&sctx->ctx);
 }
 
-static bool sign_push(struct input_output_ctx *ctx, const uint8_t *data,
+static void sign_push(struct input_output_ctx *ctx, const uint8_t *data,
 		      size_t len, bool eof __attribute__((unused)))
 {
 	struct sign_ctx *sctx = ctx->priv;
@@ -40,7 +40,6 @@ static bool sign_push(struct input_output_ctx *ctx, const uint8_t *data,
 		errx(1, "Zero-length push should never happen");
 
 	crypto_sign_update(&sctx->ctx, data, len);
-	return false;
 }
 
 static int sig_from_hex(uint8_t *sig, const char *hex)

@@ -12,7 +12,7 @@
 
 struct input_output_ctx {
 	void (*begin)(struct input_output_ctx *);
-	bool (*push)(struct input_output_ctx *, const uint8_t *, size_t, bool);
+	void (*push)(struct input_output_ctx *, const uint8_t *, size_t, bool);
 	size_t block_size;
 	size_t flushbytes;
 	size_t written;

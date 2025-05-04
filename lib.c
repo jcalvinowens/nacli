@@ -43,13 +43,7 @@ void run_input_output(struct input_output_ctx *ctx)
 
 	do {
 		len = read_one(ctx, buf[v], ctx->block_size);
-		if (ctx->push(ctx, buf[!v], ctx->block_size, len == 0)) {
-			/*
-			 * Early EOF lets us ignore tailing junk on ciphertext,
-			 * so the user can append arbitrary data to the files.
-			 */
-			return;
-		}
+		ctx->push(ctx, buf[!v], ctx->block_size, len == 0);
 
 		v = !v;
 
